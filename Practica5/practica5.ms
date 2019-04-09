@@ -1,4 +1,18 @@
 
+fn CreatePlatformsFromLine Path_= 
+(
+	for s = 1 to (numsplines Path_) do
+	(
+		for k = 1 to (numknots Path_ s) do (
+			VertexPos = (getKnotPoint Path_ s k)
+			plataforma = Plane length:10 width:10 pos:[0,0,0]
+			plataforma.pos = VertexPos
+			plataforma.name = uniquename("plataforma")
+				
+		)
+	)
+)
+
 Function Lineal Traveler CP1  CP2 Inicio Fin   =
 (
 	VectorSalto =CP2-CP1
@@ -33,7 +47,7 @@ Function Cuadratica Traveler CP1 CP2 Altura Inicio Fin =
 	
 	animate on
 	(
-		at time 0
+		at time Inicio
 		(
 			Traveler.pos=CP1
 		)
@@ -55,17 +69,30 @@ Function Cuadratica Traveler CP1 CP2 Altura Inicio Fin =
 	
 )
 
-
-
+Function Saltar Traveler Altura Inicio TiempoSalto = 
+(
+	
+	CP_Array = $plataforma* as array -- creamos el array de puntos de control
+	print CP_Array.count
+	numSaltos  = CP_Array.count - 1
+	tFin = (numSaltos * TiempoSalto)
+	animationRange = interval 0 tFin
+	tInicio = Inicio
+	
+	for i = 1 to numSaltos do(
+		Cuadratica Traveler CP_Array[i].pos CP_Array[i+1].pos Altura tInicio (tInicio+TiempoSalto)
+		tInicio = (tInicio+TiempoSalto)
+	)
+	
+	
+)
 
 rollout Salto "Salto" width:300(
 	
 	label EActor "Actor:" 
 	pickbutton UI_SelectorActor "Selecciona Actor"
-	label EP1 "P1:" 
-	pickbutton UI_SelectorP1 "Selecciona P1"
-	label EP2 "P2:" 
-	pickbutton UI_SelectorP2 "Selecciona P2"
+	label EPath "Camino:"
+	pickbutton UI_SelectorPath "Selecciona Camino"
 	
 	spinner UI_StartTime "Comienzo" range:[0,1000,0] type:#Integer
 	spinner UI_JumpDuration "Duracion salto" range:[10,100,20] type:#Integer
@@ -79,32 +106,31 @@ rollout Salto "Salto" width:300(
 		global Traveler = obj
 		UI_SelectorActor.text = obj.name
 	)
-	on UI_SelectorP1 picked obj do
+	
+	on UI_SelectorPath picked obj do
 	(
-		global P1 = obj
-		UI_SelectorP1.text = obj.name
-	)
-	on UI_SelectorP2 picked obj do
-	(
-		global P2 = obj
-		UI_SelectorP2.text = obj.name
+		global Path_ = obj
+		UI_SelectorPath.text = obj.name
 	)
 	
 	on UI_CrearSalto pressed do
 	(
 		
-		CP_Array = $Cylinder* as array -- creamos el array de puntos de control
-		
-		
-		  if Traveler!= undefined   do -- and CP_Array .count >= 2 do
+		CreatePlatformsFromLine Path_		
+			
+	
+		  if Traveler!= undefined do
 		  (
 			  deletekeys Traveler
 			  Traveler.dir = [0,0,1]
-			  Cuadratica Traveler P1.pos  P2.pos UI_AlturaSalto.value UI_StartTime.value (UI_StartTime.value+UI_JumpDuration.value)  
+			  
+			  Saltar Traveler UI_AlturaSalto.value UI_StartTime.value UI_JumpDuration.value
+			 -- Cuadratica Traveler P1.pos  P2.pos UI_AlturaSalto.value UI_StartTime.value (UI_StartTime.value+UI_JumpDuration.value)  
 
    	          --TODO Saltar (...)  
 			  Traveler.showtrajectory = on
 		  )
+		  
     )
 )
 
