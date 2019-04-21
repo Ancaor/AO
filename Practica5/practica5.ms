@@ -1,4 +1,11 @@
 
+fn GetVectorsAngle v1 v2 =
+(
+theAngle = acos(dot (normalize v1) (normalize v2))
+return theAngle
+)
+
+
 fn CreatePlatformsFromLine Path_= 
 (
 	for s = 1 to (numsplines Path_) do
@@ -69,20 +76,54 @@ Function Cuadratica Traveler CP1 CP2 Altura Inicio Fin =
 	
 )
 
+Function Anticipacion Traveler PosActual PosSiguiente Vdireccion_Anterior TInicio TFin = 
+(
+	Vdireccion_Siguiente  = PosSiguiente - PosActual
+	
+	Angulo = GetVectorsAngle Vdireccion_Anterior Vdireccion_Siguiente
+	
+	animate on
+	(
+		
+		at time TInicio
+		(
+			rot_traveler = eulerangles 0 0 0
+			rotate Traveler rot_traveler
+			Traveler.pos=PosActual
+		)
+		
+		at time TFin
+		(
+			rot_traveler = eulerangles 0 0 -Angulo
+			rotate Traveler rot_traveler
+		)
+	)
+	
+	return Vdireccion_Siguiente
+	
+)
+
 Function Saltar Traveler Altura Inicio TiempoSalto = 
 (
-	
+	free CP_Array
+	CP_Array  = #()
 	CP_Array = $plataforma* as array -- creamos el array de puntos de control
+	print "puntos de control : "
 	print CP_Array.count
 	numSaltos  = CP_Array.count - 1
-	tFin = (numSaltos * TiempoSalto)
+	TiempoAnticipacion = 8
+	tFin = (numSaltos * (TiempoSalto + TiempoAnticipacion))
 	animationRange = interval 0 tFin
 	tInicio = Inicio
+	Vdireccion_Anterior = [1,0,0]
 	
 	for i = 1 to numSaltos do(
-		Cuadratica Traveler CP_Array[i].pos CP_Array[i+1].pos Altura tInicio (tInicio+TiempoSalto)
-		tInicio = (tInicio+TiempoSalto)
+		Vdireccion_Anterior = Anticipacion Traveler CP_Array[i].pos CP_Array[i+1].pos Vdireccion_Anterior tInicio (tInicio + TiempoAnticipacion)
+		Cuadratica Traveler CP_Array[i].pos CP_Array[i+1].pos Altura (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto)
+		tInicio = (tInicio+TiempoSalto + TiempoAnticipacion)
 	)
+	
+	 
 	
 	
 )
@@ -115,19 +156,20 @@ rollout Salto "Salto" width:300(
 	
 	on UI_CrearSalto pressed do
 	(
-		
+		if $plataforma001 == undefined do(
 		CreatePlatformsFromLine Path_		
-			
+		)
 	
 		  if Traveler!= undefined do
 		  (
 			  deletekeys Traveler
 			  Traveler.dir = [0,0,1]
 			  
-			  Saltar Traveler UI_AlturaSalto.value UI_StartTime.value UI_JumpDuration.value
-			 -- Cuadratica Traveler P1.pos  P2.pos UI_AlturaSalto.value UI_StartTime.value (UI_StartTime.value+UI_JumpDuration.value)  
+			  
+			  Saltar Traveler UI_AlturaSalto.value UI_StartTime.value UI_JumpDuration.value 
 
-   	          --TODO Saltar (...)  
+			  
+			  
 			  Traveler.showtrajectory = on
 		  )
 		  
