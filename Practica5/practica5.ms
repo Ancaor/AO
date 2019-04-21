@@ -1,7 +1,7 @@
 
 fn GetVectorsAngle v1 v2 =
 (
-theAngle = acos(dot (normalize v1) (normalize v2))
+theAngle =	(atan2 v2.y v2.x) - (atan2 v1.y v1.x)
 return theAngle
 )
 
@@ -19,6 +19,7 @@ fn CreatePlatformsFromLine Path_=
 		)
 	)
 )
+
 
 Function Lineal Traveler CP1  CP2 Inicio Fin   =
 (
@@ -94,7 +95,7 @@ Function Anticipacion Traveler PosActual PosSiguiente Vdireccion_Anterior TInici
 		
 		at time TFin
 		(
-			rot_traveler = eulerangles 0 0 -Angulo
+			rot_traveler = eulerangles 0 0 Angulo
 			rotate Traveler rot_traveler
 		)
 	)
