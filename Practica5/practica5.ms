@@ -21,6 +21,44 @@ fn CreatePlatformsFromLine Path_=
 )
 
 
+fn SquashAndStretch Traveler T T_ini T_fin =
+(
+	Squash_val = 0.5 --ChangeInterval H H_MIN H_MAX 0 SQUASH_FACTOR
+	Stretch_val = 0.5 --ChangeInterval H H_MIN H_MAX 0 STRETCH_FACTOR
+	
+	Squash_max = 1 + Squash_val
+	Squash_min = 1 - Squash_val
+	Stretch_max = 1 + Stretch_val
+	Stretch_min = 1 - Stretch_val
+	
+	animate on 
+	(
+		at time (T_ini)
+		(
+			Traveler.scale = [Squash_max, Squash_max, Squash_min] --aplasta
+		)
+		at time (T_ini + (T / 8))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+		)
+		at time (T_ini + (T / 4))
+		(
+			Traveler.scale = [Stretch_min, Stretch_min, Stretch_max] --estira
+		)
+		at time (T_ini + (T / 2))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+		)
+		at time (T_fin - (T / 8))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+		)
+	)
+)
+
+
+
+
 Function Lineal Traveler CP1  CP2 Inicio Fin   =
 (
 	VectorSalto =CP2-CP1
@@ -118,9 +156,12 @@ Function Saltar Traveler Altura Inicio TiempoSalto =
 	tInicio = Inicio
 	Vdireccion_Anterior = [1,0,0]
 	
+	
+	
 	for i = 1 to numSaltos do(
 		Vdireccion_Anterior = Anticipacion Traveler CP_Array[i].pos CP_Array[i+1].pos Vdireccion_Anterior tInicio (tInicio + TiempoAnticipacion)
 		Cuadratica Traveler CP_Array[i].pos CP_Array[i+1].pos Altura (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto)
+		SquashAndStretch Traveler TiempoSalto (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto)
 		tInicio = (tInicio+TiempoSalto + TiempoAnticipacion)
 	)
 	
