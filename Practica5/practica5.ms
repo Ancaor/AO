@@ -21,10 +21,10 @@ fn CreatePlatformsFromLine Path_=
 )
 
 
-fn SquashAndStretch Traveler T T_ini T_fin =
+fn SquashAndStretch Traveler T T_ini T_fin SquashStretch =
 (
-	Squash_val = 0.5 --ChangeInterval H H_MIN H_MAX 0 SQUASH_FACTOR
-	Stretch_val = 0.5 --ChangeInterval H H_MIN H_MAX 0 STRETCH_FACTOR
+	Squash_val = SquashStretch 
+	Stretch_val = SquashStretch 
 	
 	Squash_max = 1 + Squash_val
 	Squash_min = 1 - Squash_val
@@ -142,7 +142,7 @@ Function Anticipacion Traveler PosActual PosSiguiente Vdireccion_Anterior TInici
 	
 )
 
-Function Saltar Traveler Altura Inicio TiempoSalto = 
+Function Saltar Traveler Altura Inicio TiempoSalto SquashStretch = 
 (
 	free CP_Array
 	CP_Array  = #()
@@ -152,7 +152,7 @@ Function Saltar Traveler Altura Inicio TiempoSalto =
 	numSaltos  = CP_Array.count - 1
 	TiempoAnticipacion = 8
 	tFin = (numSaltos * (TiempoSalto + TiempoAnticipacion))
-	animationRange = interval 0 tFin
+	animationRange = interval 0 (tFin+10)
 	tInicio = Inicio
 	Vdireccion_Anterior = [1,0,0]
 	
@@ -161,7 +161,7 @@ Function Saltar Traveler Altura Inicio TiempoSalto =
 	for i = 1 to numSaltos do(
 		Vdireccion_Anterior = Anticipacion Traveler CP_Array[i].pos CP_Array[i+1].pos Vdireccion_Anterior tInicio (tInicio + TiempoAnticipacion)
 		Cuadratica Traveler CP_Array[i].pos CP_Array[i+1].pos Altura (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto)
-		SquashAndStretch Traveler TiempoSalto (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto)
+		SquashAndStretch Traveler TiempoSalto (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto) SquashStretch
 		tInicio = (tInicio+TiempoSalto + TiempoAnticipacion)
 	)
 	
@@ -179,8 +179,7 @@ rollout Salto "Salto" width:300(
 	
 	spinner UI_StartTime "Comienzo" range:[0,1000,0] type:#Integer
 	spinner UI_JumpDuration "Duracion salto" range:[10,100,20] type:#Integer
-	spinner UI_MaxSquash "Valor maximo de squash" range:[1,100,5] type:#Integer
-	spinner UI_MaxStretch "Valor maximo de stretch" range:[1,100,5] type:#Integer	
+	spinner UI_MaxSquash "Valor maximo de squash and Stretch" range:[0.01,1.00,0.50] type:#Float
 	spinner UI_AlturaSalto "Valor maximo de altura salto" range:[1,100,5] type:#Integer	
 	button UI_CrearSalto "Crear"
 	
@@ -208,7 +207,7 @@ rollout Salto "Salto" width:300(
 			  Traveler.dir = [0,0,1]
 			  
 			  
-			  Saltar Traveler UI_AlturaSalto.value UI_StartTime.value UI_JumpDuration.value 
+			  Saltar Traveler UI_AlturaSalto.value UI_StartTime.value UI_JumpDuration.value UI_MaxSquash.value
 
 			  
 			  
