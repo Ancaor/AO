@@ -115,6 +115,52 @@ Function Cuadratica Traveler CP1 CP2 Altura Inicio Fin =
 	
 )
 
+Function FinAnimacion Traveler T_ini T T_fin SquashStretch =
+(
+	Squash_val = SquashStretch 
+	Stretch_val = SquashStretch 
+	
+	Squash_max = 1 + Squash_val
+	Squash_min = 1 - Squash_val
+	Stretch_max = 1 + Stretch_val
+	Stretch_min = 1 - Stretch_val
+	
+	alturaSalto = 15
+	
+	animate on 
+	(
+		at time (T_ini)
+		(
+			Traveler.scale = [Squash_max, Squash_max, Squash_min] --aplasta
+			rot_traveler = eulerangles 0 0 0
+			rotate Traveler rot_traveler
+		)
+		at time (T_ini + (T / 8))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+		)
+		at time (T_ini + (T / 4))
+		(
+			Traveler.scale = [Stretch_min, Stretch_min, Stretch_max] --estira
+		)
+		at time (T_ini + (T / 2))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+			Traveler.pos = [Traveler.pos.x, Traveler.pos.y,alturaSalto]
+			rot_traveler = eulerangles 0 0 180
+			rotate Traveler rot_traveler
+		)
+		at time (T_fin - (T / 8))
+		(
+			Traveler.scale = [1, 1, 1] --pos. original
+			Traveler.pos = [Traveler.pos.x, Traveler.pos.y,0]
+			rot_traveler = eulerangles 0 0 180
+			rotate Traveler rot_traveler
+		)
+	)
+	
+)
+
 Function Anticipacion Traveler PosActual PosSiguiente Vdireccion_Anterior TInicio TFin = 
 (
 	Vdireccion_Siguiente  = PosSiguiente - PosActual
@@ -151,8 +197,9 @@ Function Saltar Traveler Altura Inicio TiempoSalto SquashStretch =
 	print CP_Array.count
 	numSaltos  = CP_Array.count - 1
 	TiempoAnticipacion = 8
+	TiempoFinAnimacion =30
 	tFin = (numSaltos * (TiempoSalto + TiempoAnticipacion))
-	animationRange = interval 0 (tFin+10)
+	animationRange = interval 0 (tFin+10+ TiempoFinAnimacion) 
 	tInicio = Inicio
 	Vdireccion_Anterior = [1,0,0]
 	
@@ -164,6 +211,8 @@ Function Saltar Traveler Altura Inicio TiempoSalto SquashStretch =
 		SquashAndStretch Traveler TiempoSalto (tInicio + TiempoAnticipacion) (tInicio + TiempoAnticipacion + TiempoSalto) SquashStretch
 		tInicio = (tInicio+TiempoSalto + TiempoAnticipacion)
 	)
+	
+	FinAnimacion Traveler tInicio TiempoFinAnimacion (tInicio + TiempoFinAnimacion) SquashStretch
 	
 	 
 	
