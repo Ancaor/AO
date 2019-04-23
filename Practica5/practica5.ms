@@ -150,13 +150,23 @@ Function FinAnimacion Traveler T_ini T T_fin SquashStretch =
 			rot_traveler = eulerangles 0 0 180
 			rotate Traveler rot_traveler
 		)
+		at time (T_fin - (T / 7))
+		(
+		Traveler.scale = [1,1, 1] --pos. original
+
+		)
 		at time (T_fin - (T / 8))
 		(
-			Traveler.scale = [1, 1, 1] --pos. original
+			Traveler.scale = [Squash_max, Squash_max, Squash_min] --squash
 			Traveler.pos = [Traveler.pos.x, Traveler.pos.y,0]
 			rot_traveler = eulerangles 0 0 180
 			rotate Traveler rot_traveler
 		)
+		
+		at time T_fin
+		(
+			Traveler.scale = [1,1, 1] --pos. original
+			)
 	)
 	
 )
@@ -197,7 +207,7 @@ Function Saltar Traveler Altura Inicio TiempoSalto SquashStretch =
 	print CP_Array.count
 	numSaltos  = CP_Array.count - 1
 	TiempoAnticipacion = 8
-	TiempoFinAnimacion =30
+	TiempoFinAnimacion =35
 	tFin = (numSaltos * (TiempoSalto + TiempoAnticipacion))
 	animationRange = interval 0 (tFin+10+ TiempoFinAnimacion) 
 	tInicio = Inicio
