@@ -229,7 +229,7 @@ Function Saltar Traveler Altura Inicio TiempoSalto SquashStretch =
 	
 )
 
-rollout Salto "Salto" width:300(
+rollout Salto "Salto" width:350(
 	
 	label EActor "Actor:" 
 	pickbutton UI_SelectorActor "Selecciona Actor"
