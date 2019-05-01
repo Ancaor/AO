@@ -4,7 +4,7 @@ plane_ = $Plane001
 path_ = $Line001
 
 tStart_ = 0
-tEnd_ = 300
+tEnd_ = 1000
 
 animationRange = interval tStart_ tEnd_
 
@@ -36,26 +36,11 @@ fn AssignFollowerToPath = (
 	pc.follow = true
 )
 
-Function alinearPlanoCamino = 
-(
-	rotAxis_ = cross plane_.dir [0,0,1]
-	rotAngle_ = GetVectorsAngle plane_.dir [0,0,1]
-	
-	quaternion_ = quat rotAngle_ rotAxis_
-			
-	rotEuler_ = QuatToEuler quaternion_
-	
-	rotate path_ rotEuler_
-	
-	
-	
-)
-
 animate on
 (
 	deleteKeys traveller_
+	animationRange = interval tStart_ tEnd_
 	
-	--alinearPlanoCamino()
 	
 	AssignFollowerToPath()
 	
