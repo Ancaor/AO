@@ -1,12 +1,5 @@
 traveller_ = $Sphere001
-toFollow_ = $Box001
-plane_ = $Plane001
-path_ = $Line001
 
-tStart_ = 0
-tEnd_ = 1000
-
-animationRange = interval tStart_ tEnd_
 
 fn GetVectorsAngle Va Vb =
 (
@@ -36,45 +29,82 @@ fn AssignFollowerToPath = (
 	pc.follow = true
 )
 
-animate on
-(
-	deleteKeys traveller_
-	animationRange = interval tStart_ tEnd_
+rollout Practica6 "Practica 6" (
 	
+	label EPlane "Plano:" 
+	pickbutton UI_SelectorPlane "Selecciona Plano"
+	label EPath "Camino:"
+	pickbutton UI_SelectorPath "Selecciona Camino"
+	spinner tStart_ "Comienzo" range:[0,1000,0] type:#Integer
+	spinner tEnd_ "Final" range:[0,1000,1000] type:#Integer
+	button UI_CrearAnimacion "Crear Animacion"
 	
-	AssignFollowerToPath()
+	on UI_SelectorPlane picked obj do
+	(
+		global plane_ = obj
+		UI_SelectorPlane.text = obj.name
+	)
 	
+	on UI_SelectorPath picked obj do
+	(
+		global path_ = obj
+		UI_SelectorPath.text = obj.name
+	)
 	
-	for t in tStart_ to tEnd_ by 1 do(
+	on UI_CrearAnimacion pressed do
+	(
 		
-		collision_ = getCollision t
-		TravellerPos_ = collision_.pos + (collision_.dir * traveller_.radius)
-		
-		at time t traveller_.pos = TravellerPos_
-			
-		if t > tStart_ do (
-			
-			if t < tEnd_ then (
-				nextCollision_ = getCollision (t+1)
-				nextTravellerPos_ = nextCollision_.pos + (nextCollision_.dir * traveller_.radius)
-			) else (
-				nextCollision_ = getCollision tStart_
-				nextTravellerPos_ = nextCollision_.pos + (nextCollision_.dir * traveller_.radius)
+		if plane_ != undefined and path_ != undefined do(
+			animate on
+			(
+				deleteKeys traveller_
+				animationRange = interval tStart_.value tEnd_.value
+				
+				global toFollow_ = box length:20 width:20 height:20
+
+				
+				AssignFollowerToPath()
+				
+				
+				for t in tStart_.value to tEnd_.value by 1 do(
+					
+					collision_ = getCollision t
+					TravellerPos_ = collision_.pos + (collision_.dir * traveller_.radius)
+					
+					at time t traveller_.pos = TravellerPos_
+						
+					if t > tStart_.value do (
+						
+						if t < tEnd_.value then (
+							nextCollision_ = getCollision (t+1)
+							nextTravellerPos_ = nextCollision_.pos + (nextCollision_.dir * traveller_.radius)
+						) else (
+							nextCollision_ = getCollision tStart_.value
+							nextTravellerPos_ = nextCollision_.pos + (nextCollision_.dir * traveller_.radius)
+						)
+						
+						vect_ = nextTravellerPos_ - TravellerPos_
+						vectDistance_ = Length vect_
+						vecNormalized_ = vect_ / vectDistance_
+						
+						rotAxis_ = cross vecNormalized_ collision_.dir
+						rotAngle_ = 360 * vectDistance_ / (traveller_.radius * 2 * pi)
+						
+						quaternion_ = quat rotAngle_ rotAxis_
+						
+						rotEuler_ = QuatToEuler quaternion_
+						at time t rotate traveller_ rotEuler_
+						
+					)			
+					
+				)
+				delete toFollow_
 			)
 			
-			vect_ = nextTravellerPos_ - TravellerPos_
-			vectDistance_ = Length vect_
-			vecNormalized_ = vect_ / vectDistance_
-			
-			rotAxis_ = cross vecNormalized_ collision_.dir
-			rotAngle_ = 360 * vectDistance_ / (traveller_.radius * 2 * pi)
-			
-			quaternion_ = quat rotAngle_ rotAxis_
-			
-			rotEuler_ = QuatToEuler quaternion_
-			at time t rotate traveller_ rotEuler_
-			
-		)			
+		)
+		
 		
 	)
+	
 )
+createdialog Practica6
