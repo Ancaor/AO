@@ -22,7 +22,6 @@ Function getCollision t =
 )
 
 fn AssignFollowerToPath = (
-	print "dasdsadsdadsdssjsjsjsjsjssjjjjjjjjjjjjjjjjjjjjjj"
 	pc = Path_Constraint()
 	toFollow_.pos.controller = pc
 	pc.path = path_
