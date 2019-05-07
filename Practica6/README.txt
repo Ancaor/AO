@@ -1,0 +1,1 @@
+Si en la lista de objetos de la escena aparece un "BOX00*" eliminarla para que la siguiente ejecución del script funcione correctamente.
