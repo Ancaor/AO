@@ -1,0 +1,6 @@
+La cinematica directa me ha permitido realizar las animaciones mejor que la inversa porque permite un mayor control sobre todo el biped,
+un ejemplo es la pose estática en la que en la versión de cinematica inversa no rotaba las rodillas por lo que la pose no se puede reproducir correctamente.
+
+En el caso de "limpiar la mesa" el movimiento de la mano se hace más facil con cinematica inversa.
+
+En general la cinematica directa es más lenta de realizar pero el resultado es mucho mejor ya que se tiene más control.
